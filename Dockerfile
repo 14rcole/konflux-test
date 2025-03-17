@@ -54,12 +54,18 @@ RUN rpm -Uvh epel-release-latest-9.noarch.rpm && \
     microdnf -y install libicu && \
     microdnf clean all
 
-RUN ARCH=$(uname -m) && curl -s -L https://github.com/open-policy-agent/conftest/releases/download/v"${conftest_version}"/conftest_"${conftest_version}"_Linux_"$ARCH".tar.gz | tar -xz --no-same-owner -C /usr/bin/ && \
-    curl https://mirror.openshift.com/pub/openshift-v4/"$ARCH"/clients/ocp/stable/openshift-client-linux.tar.gz --output oc.tar.gz && tar -xzvf oc.tar.gz -C /usr/bin && rm oc.tar.gz && \
+RUN echo "conftest" && \
+    ARCH=$(uname -m) && curl -s -L https://github.com/open-policy-agent/conftest/releases/download/v"${conftest_version}"/conftest_"${conftest_version}"_Linux_"$ARCH".tar.gz | tar -xz --no-same-owner -C /usr/bin/
+
+RUN echo "openshift-client" && \
+    ARCH=$(uname -m) && curl -v https://mirror.openshift.com/pub/openshift-v4/"$ARCH"/clients/ocp/stable/openshift-client-linux.tar.gz --output oc.tar.gz && tar -xzvf oc.tar.gz -C /usr/bin && rm oc.tar.gz
+
+RUN echo "opm and umoci" && \
     curl -s -L https://github.com/operator-framework/operator-registry/releases/download/"${OPM_VERSION}"/linux-amd64-opm > /usr/bin/opm && chmod +x /usr/bin/opm && \
     curl -s -L https://github.com/opencontainers/umoci/releases/download/"${UMOCI_VERSION}"/umoci.amd64 > /usr/bin/umoci && chmod +x /usr/bin/umoci
     
-RUN curl -s -LO "https://github.com/bats-core/bats-core/archive/refs/tags/v$BATS_VERSION.tar.gz" && \
+RUN echo "bats-core" && \
+    curl -s -LO "https://github.com/bats-core/bats-core/archive/refs/tags/v$BATS_VERSION.tar.gz" && \
     tar -xf "v$BATS_VERSION.tar.gz" && \
     cd "bats-core-$BATS_VERSION" && \
     ./install.sh /usr && \
